@@ -1,59 +1,54 @@
 import * as React from 'react';
-import { useState, useEffect } from 'react';
-import styles from './LnsBookings.module.scss';
-import { ILnsBookingsProps } from './ILnsBookingsProps';
-import { escape } from '@microsoft/sp-lodash-subset';
+// import { useState } from 'react';
+// import styles from './LnsBookings.module.scss';
+// import { ILnsBookingsProps } from './ILnsBookingsProps';
+// import { escape } from '@microsoft/sp-lodash-subset';
+
+// useEffect(() => {
+
+
+//    // get events from sharepoint data to state
+// }, [])
+
+export default class LnsBookings extends React.Component {
+
+  render() {
+    //Criar objecto para eventos, pessoas e popular o ecrã com essa dummy date.
+    // Calendar booking object
+
+    // const [booking, setBooking] = useState(
+    //   {
+    //     id: 1,
+    //     owner: 'nuno.florido@lisbonnearshore.com',
+    //     details: {
+    //       days: ['11/06/2023', '12/06/2023'],
+    //       invitees: {
+    //         1: { email: 'external@hotmail.com', confirmed: false },
+    //         2: { email: 'jose.fraga@lisbonnearshore.com', confirmed: false },
+    //         3: { email: 'vanessa.velosa@lisbonnearshore.com', confirmed: false }
+    //       }
+    //     }
+    //   }
+    // );
 
 
 
-//Criar objecto para eventos, pessoas e popular o ecrã com essa dummy date.
-function getCalendarBooking() {
-
-  // Calendar booking object
-  const [booking, setBooking] = useState({});
-  getCalendarBooking()
-  console.log('teste ---', booking)
-  setBooking('')
-}
-
-
-useEffect(() => {
-  const booking =
-  {
-    id: 1,
-    owner: 'nuno.florido@lisbonnearshore.com',
-    details: {
-      days: ['11/06/2023', '12/06/2023'],
-      invitees: {
-        1: { email: 'external@hotmail.com', confirmed: false },
-        2: { email: 'jose.fraga@lisbonnearshore.com', confirmed: false },
-        3: { email: 'vanessa.velosa@lisbonnearshore.com', confirmed: false }
-      }
-    }
-  }
-   // get events from sharepoint data to state
-}, [])
-
-
-
-export default class LnsBookings extends React.Component<ILnsBookingsProps, {}> {
-
-  public render(): React.ReactElement<ILnsBookingsProps> {
-    const {
-      description,
-      isDarkTheme,
-      environmentMessage,
-      hasTeamsContext,
-      userDisplayName
-    } = this.props;
-
-
-
-
+    // function handleBooking() {
+    //   setBooking(booking)
+    //   alert('booking called')
+    // }
+    // const {
+    //   description,
+    //   isDarkTheme,
+    //   environmentMessage,
+    //   hasTeamsContext,
+    //   userDisplayName
+    // } = this.props;
     return (
       <>
-      {getCalendarBooking}
-        <section className={`${styles.lnsBookings} ${hasTeamsContext ? styles.teams : ''}`}>
+        <h1>Teste</h1>
+        {/* <button type="button" onClick={() => handleBooking} /> */}
+        {/* <section className={`${styles.lnsBookings} ${hasTeamsContext ? styles.teams : ''}`}>
           <div className={styles.welcome}>
             <img alt="" src={isDarkTheme ? require('../assets/welcome-dark.png') : require('../assets/welcome-light.png')} className={styles.welcomeImage} />
             <h2>Well done, {escape(userDisplayName)}!</h2>
@@ -76,7 +71,7 @@ export default class LnsBookings extends React.Component<ILnsBookingsProps, {}> 
               <li><a href="https://aka.ms/m365pnp" target="_blank" rel="noreferrer">Microsoft 365 Developer Community</a></li>
             </ul>
           </div>
-        </section>
+        </section> */}
       </>
     );
   }
