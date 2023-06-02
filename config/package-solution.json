@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "lns-bookings-client-side-solution",
+    "id": "0559f258-94d9-4c33-a5c3-2314a818894e",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": "Undefined-1.17.2"
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "lns-bookings description"
+      },
+      "longDescription": {
+        "default": "lns-bookings description"
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "lns-bookings Feature",
+        "description": "The feature that activates elements of the lns-bookings solution.",
+        "id": "13622d33-152c-4931-9f20-40fd1b80be29",
+        "version": "1.0.0.0"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/lns-bookings.sppkg"
+  }
+}

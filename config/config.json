@@ -1,0 +1,18 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "lns-bookings-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/lnsBookings/LnsBookingsWebPart.js",
+          "manifest": "./src/webparts/lnsBookings/LnsBookingsWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "LnsBookingsWebPartStrings": "lib/webparts/lnsBookings/loc/{locale}.js"
+  }
+}
