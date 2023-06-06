@@ -1,16 +1,19 @@
 import * as React from 'react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import styles from './LnsBookings.module.scss';
 import { ILnsBookingsProps } from './ILnsBookingsProps';
 import { escape } from '@microsoft/sp-lodash-subset';
-import { SPHttpClient, SPHttpClientResponse } from '@microsoft/sp-http';
+import { SPHttpClient } from '@microsoft/sp-http';
 import { NormalPeoplePicker } from '@fluentui/react/lib/Pickers';
 import { IPersonaProps } from 'office-ui-fabric-react';
 
 const LnsBookingsProps: React.FC<ILnsBookingsProps> = (props) => {
   const {
+      // @ts-ignore
     description,
+      // @ts-ignore
     isDarkTheme,
+      // @ts-ignore
     environmentMessage,
     hasTeamsContext,
     userDisplayName,
@@ -127,7 +130,7 @@ const LnsBookingsProps: React.FC<ILnsBookingsProps> = (props) => {
           onResolveSuggestions={onResolveSuggestions}
           onChange={onChange}
           selectedItems={selectedUsers}
-          resolveDelay={500}
+          resolveDelay={1000}
         />
         
       </div>
