@@ -1,78 +1,138 @@
 import * as React from 'react';
-// import { useState } from 'react';
-// import styles from './LnsBookings.module.scss';
-// import { ILnsBookingsProps } from './ILnsBookingsProps';
-// import { escape } from '@microsoft/sp-lodash-subset';
+import { useState, useEffect } from 'react';
+import styles from './LnsBookings.module.scss';
+import { ILnsBookingsProps } from './ILnsBookingsProps';
+import { escape } from '@microsoft/sp-lodash-subset';
+import { SPHttpClient, SPHttpClientResponse } from '@microsoft/sp-http';
+import { NormalPeoplePicker } from '@fluentui/react/lib/Pickers';
+import { IPersonaProps } from 'office-ui-fabric-react';
 
-// useEffect(() => {
+const LnsBookingsProps: React.FC<ILnsBookingsProps> = (props) => {
+  const {
+    description,
+    isDarkTheme,
+    environmentMessage,
+    hasTeamsContext,
+    userDisplayName,
+    currentSiteUrl,
+    spHttpClient
+  } = props;
 
+  // const [siteLists, setSiteLists] = useState<string[]>([]);
+  // const [mappedUsersList, setMappedUsersList] = useState<IPersonaProps[]>([]);
+  // const [searchTerm, setSearchTerm] = useState('');
+  const [selectedUsers, setSelectedUsers] = useState<IPersonaProps[]>([]);
 
-//    // get events from sharepoint data to state
-// }, [])
+  // useEffect(() => {
+  //   (async () => {
+  //     const endpoint: string = `${currentSiteUrl}/_api/Web/SiteUsers`;
 
-export default class LnsBookings extends React.Component {
+  //     spHttpClient
+  //       .get(endpoint, SPHttpClient.configurations.v1, {
+  //         headers: [['accept', 'application/json;odata.metadata=none']]
+  //       })
+  //       .then((res: SPHttpClientResponse) => res.json())
+  //       .then((users: any) => {
+  //         setMappedUsersList(
+  //           users.value.map((user: any) => ({
+  //             key: user.Id,
+  //             text: user.Title,
+  //             secondaryText: user.Email
+  //           }))
+  //         );
+  //       })
+  //       .catch((error: any) => {
+  //         console.log('error', error);
+  //       });
+  //   })();
+  // }, []);
 
-  render() {
-    //Criar objecto para eventos, pessoas e popular o ecrã com essa dummy date.
-    // Calendar booking object
+  const onResolveSuggestions = async (
+    filter?: string,
+    selectedItems?: IPersonaProps[]
+  ): Promise<IPersonaProps[]> => {
+    try {
+      const endpoint: string = `${currentSiteUrl}/_api/SP.UI.ApplicationPages.ClientPeoplePickerWebServiceInterface.clientPeoplePickerSearchUser`;
+      const queryParams = {
+        AllowEmailAddresses: true,
+        AllowMultipleEntities: false,
+        AllUrlZones: false,
+        MaximumEntitySuggestions: 50,
+        PrincipalSource: 15,
+        PrincipalType: 15,
+        QueryString: filter,
+        SharePointGroupID: 0,
+        UrlZone: 1
+      };
+      let parsedValue;
+      const response = await spHttpClient.post(
+        endpoint,
+        SPHttpClient.configurations.v1,
+        {
+          headers: [['accept', 'application/json;odata.metadata=none']],
+          body: JSON.stringify({ queryParams })
+        }
+      );
 
-    // const [booking, setBooking] = useState(
-    //   {
-    //     id: 1,
-    //     owner: 'nuno.florido@lisbonnearshore.com',
-    //     details: {
-    //       days: ['11/06/2023', '12/06/2023'],
-    //       invitees: {
-    //         1: { email: 'external@hotmail.com', confirmed: false },
-    //         2: { email: 'jose.fraga@lisbonnearshore.com', confirmed: false },
-    //         3: { email: 'vanessa.velosa@lisbonnearshore.com', confirmed: false }
-    //       }
-    //     }
-    //   }
-    // );
+      try {
+        const json = await response.json();
+        parsedValue = JSON.parse(json.value.toString());
+        console.log('Response JSON:', parsedValue);
+        // console.log('Response JSON:', json);
+      } catch (error) {
+        console.error('Error parsing JSON:', error);
+        return [];
+      }
 
+      if (Array.isArray(parsedValue)) {
+        const suggestions: IPersonaProps[] = parsedValue
+          .filter((user: any) => user.EntityData && user.EntityData.Email !== null)
+          .map((user: any) => ({
+            key: user.Key, // Add a unique identifier
+            text: user.DisplayText,
+            secondaryText: user.EntityData.Email
+          }));
 
+        // Filter out already selected items
+        const filteredSuggestions = selectedItems
+          ? suggestions.filter(
+            (suggestion) =>
+              !selectedItems.some(
+                (selectedItem) => selectedItem.text === suggestion.text
+              )
+          )
+          : suggestions;
 
-    // function handleBooking() {
-    //   setBooking(booking)
-    //   alert('booking called')
-    // }
-    // const {
-    //   description,
-    //   isDarkTheme,
-    //   environmentMessage,
-    //   hasTeamsContext,
-    //   userDisplayName
-    // } = this.props;
-    return (
-      <>
-        <h1>Teste</h1>
-        {/* <button type="button" onClick={() => handleBooking} /> */}
-        {/* <section className={`${styles.lnsBookings} ${hasTeamsContext ? styles.teams : ''}`}>
-          <div className={styles.welcome}>
-            <img alt="" src={isDarkTheme ? require('../assets/welcome-dark.png') : require('../assets/welcome-light.png')} className={styles.welcomeImage} />
-            <h2>Well done, {escape(userDisplayName)}!</h2>
-            <div>{environmentMessage}</div>
-            <div>Web part property value: <strong>{escape(description)}</strong></div>
-          </div>
-          <div>
-            <h3>Welcome to SharePoint Framework!</h3>
-            <p>
-              The SharePoint Framework (SPFx) is a extensibility model for Microsoft Viva, Microsoft Teams and SharePoint. It&#39;s the easiest way to extend Microsoft 365 with automatic Single Sign On, automatic hosting and industry standard tooling.
-            </p>
-            <h4>Learn more about SPFx development:</h4>
-            <ul className={styles.links}>
-              <li><a href="https://aka.ms/spfx" target="_blank" rel="noreferrer">SharePoint Framework Overview</a></li>
-              <li><a href="https://aka.ms/spfx-yeoman-graph" target="_blank" rel="noreferrer">Use Microsoft Graph in your solution</a></li>
-              <li><a href="https://aka.ms/spfx-yeoman-teams" target="_blank" rel="noreferrer">Build for Microsoft Teams using SharePoint Framework</a></li>
-              <li><a href="https://aka.ms/spfx-yeoman-viva" target="_blank" rel="noreferrer">Build for Microsoft Viva Connections using SharePoint Framework</a></li>
-              <li><a href="https://aka.ms/spfx-yeoman-store" target="_blank" rel="noreferrer">Publish SharePoint Framework applications to the marketplace</a></li>
-              <li><a href="https://aka.ms/spfx-yeoman-api" target="_blank" rel="noreferrer">SharePoint Framework API reference</a></li>
-              <li><a href="https://aka.ms/m365pnp" target="_blank" rel="noreferrer">Microsoft 365 Developer Community</a></li>
-            </ul>
-          </div>
-        </section> */}
-      </>
-    );
-  }
-}
+        return filteredSuggestions;
+      } else {
+        console.error('Invalid response structure:', parsedValue);
+        return [];
+      }
+    } catch (error) {
+      console.error('Error fetching suggestions:', error);
+      return [];
+    }
+  };
+
+  const onChange = (items?: IPersonaProps[]): void => {
+    setSelectedUsers(items || []);
+  };
+
+  return (
+    <section className={`${styles.lnsBookings} ${hasTeamsContext ? styles.teams : ''}`}>
+      <div className={styles.welcome}>
+        <h2>Well done, {escape(userDisplayName)}!</h2>
+
+        <NormalPeoplePicker
+          onResolveSuggestions={onResolveSuggestions}
+          onChange={onChange}
+          selectedItems={selectedUsers}
+          resolveDelay={500}
+        />
+        
+      </div>
+    </section>
+  );
+};
+
+export default LnsBookingsProps;
