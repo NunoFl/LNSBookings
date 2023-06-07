@@ -23,7 +23,6 @@ const LnsBookingsProps: React.FC<ILnsBookingsProps> = (props) => {
     spHttpClient
   } = props;
 
-
   // @ts-ignore
   const [selectedUsers, setSelectedUsers] = useState<IPersonaProps[]>([]);
   // @ts-ignore
@@ -40,7 +39,6 @@ const LnsBookingsProps: React.FC<ILnsBookingsProps> = (props) => {
           {
             headers: [['accept', 'application/json;odata.metadata=none']],
           }
-        
         );
   
        // const response: SPHttpClientResponse = await spHttpClient.get(endpoint, SPHttpClient.configurations.v1, requestOptions);
@@ -61,40 +59,6 @@ const LnsBookingsProps: React.FC<ILnsBookingsProps> = (props) => {
     getCurrentUser();
   
   }, [currentSiteUrl, spHttpClient]);
-
- 
-  // // Function to determine the user type based on the login name
-  // const IsSiteAdminVerify = (IsSiteAdmin: boolean): string => {
-  //   // logic that checks if the isSiteAdmin is true
-  //   if (IsSiteAdmin) {
-  //     return 'admin';
-  //   }
-  //   return 'regular'; // Default user type if no specific condition is met
-  // };
-
-  // useEffect(() => {
-  //   (async () => {
-  //     const endpoint: string = `${currentSiteUrl}/_api/Web/SiteUsers`;
-
-  //     spHttpClient
-  //       .get(endpoint, SPHttpClient.configurations.v1, {
-  //         headers: [['accept', 'application/json;odata.metadata=none']]
-  //       })
-  //       .then((res: SPHttpClientResponse) => res.json())
-  //       .then((users: any) => {
-  //         setMappedUsersList(
-  //           users.value.map((user: any) => ({
-  //             key: user.Id,
-  //             text: user.Title,
-  //             secondaryText: user.Email
-  //           }))
-  //         );
-  //       })
-  //       .catch((error: any) => {
-  //         console.log('error', error);
-  //       });
-  //   })();
-  // }, []);
 
   const onResolveSuggestions = async (
     filter?: string,
@@ -169,14 +133,13 @@ const LnsBookingsProps: React.FC<ILnsBookingsProps> = (props) => {
     setSelectedUsers(items || []);
   };
 
- 
-
   return (
     <section className={`${styles.lnsBookings} ${hasTeamsContext ? styles.teams : ''}`}>
       <div className={styles.welcome}>
         <h2>Well done, {escape(userDisplayName)}!</h2>
         <h5> Current User Type: ({currentUserType})</h5>
         {/* TODO - change this to === / !== in order to make it correct */}
+
         {currentUserType !== 'admin' && (
         <NormalPeoplePicker
           onResolveSuggestions={onResolveSuggestions}
@@ -184,11 +147,12 @@ const LnsBookingsProps: React.FC<ILnsBookingsProps> = (props) => {
           selectedItems={selectedUsers}
           resolveDelay={1000}
         />
-        
         )}
+
         {currentUserType === 'admin' && (
           <><span aria-disabled>no permissions to invite users</span></>
-        )}        
+        )}  
+
       </div>
     </section>
   );
