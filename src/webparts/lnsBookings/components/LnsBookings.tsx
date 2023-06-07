@@ -27,42 +27,50 @@ const LnsBookingsProps: React.FC<ILnsBookingsProps> = (props) => {
   // @ts-ignore
   const [selectedUsers, setSelectedUsers] = useState<IPersonaProps[]>([]);
   // @ts-ignore
-  const [currentUserType, setCurrentUserType] = useState<string>('');
+  const [currentUserType, setCurrentUserType] = useState<string>('admin');
 
   useEffect(() => {
-    // Function to fetch the current user information
     const getCurrentUser = async () => {
       const endpoint: string = `${currentSiteUrl}/_api/web/currentUser/?$select=IsSiteAdmin`;
-
+  
       try {
-        const response: SPHttpClientResponse = await spHttpClient.get(endpoint, SPHttpClient.configurations.v1);
-        const user: any = await response.json();
-        let parsedValue = JSON.parse(user.value.toString());
+        const response = await spHttpClient.post(
+          endpoint,
+          SPHttpClient.configurations.v1,
+          {
+            headers: [['accept', 'application/json;odata.metadata=none']],
+          }
         
-        // Extract the user login name and perform additional logic to determine the user type
-        const IsSiteAdmin: boolean = parsedValue.IsSiteAdmin;
-        const userType: string = IsSiteAdminVerify(IsSiteAdmin); // Implement your logic to determine the user type
-      
-        setCurrentUserType(userType);
-     
+        );
+  
+       // const response: SPHttpClientResponse = await spHttpClient.get(endpoint, SPHttpClient.configurations.v1, requestOptions);
+        const user: any = await response.json();
+        try{
+          console.log('Allow Invite Response --', user)
+          setCurrentUserType(user.IsSiteAdmin ? 'admin' : 'user');
+          
+        } catch(error){
+          console.log(error);
+        }
+       
       } catch (error) {
         console.error('Error retrieving user information:', error);
       }
     };
-
+  
     getCurrentUser();
-
+  
   }, [currentSiteUrl, spHttpClient]);
 
  
-  // Function to determine the user type based on the login name
-  const IsSiteAdminVerify = (IsSiteAdmin: boolean): string => {
-    // logic that checks if the isSiteAdmin is true
-    if (IsSiteAdmin) {
-      return 'admin';
-    }
-    return 'regular'; // Default user type if no specific condition is met
-  };
+  // // Function to determine the user type based on the login name
+  // const IsSiteAdminVerify = (IsSiteAdmin: boolean): string => {
+  //   // logic that checks if the isSiteAdmin is true
+  //   if (IsSiteAdmin) {
+  //     return 'admin';
+  //   }
+  //   return 'regular'; // Default user type if no specific condition is met
+  // };
 
   // useEffect(() => {
   //   (async () => {
@@ -161,20 +169,15 @@ const LnsBookingsProps: React.FC<ILnsBookingsProps> = (props) => {
     setSelectedUsers(items || []);
   };
 
-  // function isUser(){
-  //   let personaldata : IPersonaProps[];
-  //   console.log('IPersonaProps', personaldata)
-  //   console.log('IPersonaProps JSON string', JSON.stringify(personaldata))
-  //   return true;
-  // }
+ 
 
   return (
     <section className={`${styles.lnsBookings} ${hasTeamsContext ? styles.teams : ''}`}>
       <div className={styles.welcome}>
         <h2>Well done, {escape(userDisplayName)}!</h2>
         <h5> Current User Type: ({currentUserType})</h5>
-     
-        {currentUserType === 'admin' && (
+        {/* TODO - change this to === / !== in order to make it correct */}
+        {currentUserType !== 'admin' && (
         <NormalPeoplePicker
           onResolveSuggestions={onResolveSuggestions}
           onChange={onChange}
@@ -183,7 +186,7 @@ const LnsBookingsProps: React.FC<ILnsBookingsProps> = (props) => {
         />
         
         )}
-        {currentUserType === 'regular' && (
+        {currentUserType === 'admin' && (
           <><span aria-disabled>no permissions to invite users</span></>
         )}        
       </div>
