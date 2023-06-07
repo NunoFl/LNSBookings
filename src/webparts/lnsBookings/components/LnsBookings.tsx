@@ -1,9 +1,11 @@
 import * as React from 'react';
-import { useState } from 'react';
+//@ts-ignore
+import { useState, useEffect } from 'react';
 import styles from './LnsBookings.module.scss';
 import { ILnsBookingsProps } from './ILnsBookingsProps';
 import { escape } from '@microsoft/sp-lodash-subset';
-import { SPHttpClient } from '@microsoft/sp-http';
+// @ts-ignore
+import { SPHttpClient, SPHttpClientResponse } from '@microsoft/sp-http';
 import { NormalPeoplePicker } from '@fluentui/react/lib/Pickers';
 import { IPersonaProps } from 'office-ui-fabric-react';
 
@@ -21,10 +23,46 @@ const LnsBookingsProps: React.FC<ILnsBookingsProps> = (props) => {
     spHttpClient
   } = props;
 
-  // const [siteLists, setSiteLists] = useState<string[]>([]);
-  // const [mappedUsersList, setMappedUsersList] = useState<IPersonaProps[]>([]);
-  // const [searchTerm, setSearchTerm] = useState('');
+
+  // @ts-ignore
   const [selectedUsers, setSelectedUsers] = useState<IPersonaProps[]>([]);
+  // @ts-ignore
+  const [currentUserType, setCurrentUserType] = useState<string>('');
+
+  useEffect(() => {
+    // Function to fetch the current user information
+    const getCurrentUser = async () => {
+      const endpoint: string = `${currentSiteUrl}/_api/web/currentUser/?$select=IsSiteAdmin`;
+
+      try {
+        const response: SPHttpClientResponse = await spHttpClient.get(endpoint, SPHttpClient.configurations.v1);
+        const user: any = await response.json();
+        let parsedValue = JSON.parse(user.value.toString());
+        
+        // Extract the user login name and perform additional logic to determine the user type
+        const IsSiteAdmin: boolean = parsedValue.IsSiteAdmin;
+        const userType: string = IsSiteAdminVerify(IsSiteAdmin); // Implement your logic to determine the user type
+      
+        setCurrentUserType(userType);
+     
+      } catch (error) {
+        console.error('Error retrieving user information:', error);
+      }
+    };
+
+    getCurrentUser();
+
+  }, [currentSiteUrl, spHttpClient]);
+
+ 
+  // Function to determine the user type based on the login name
+  const IsSiteAdminVerify = (IsSiteAdmin: boolean): string => {
+    // logic that checks if the isSiteAdmin is true
+    if (IsSiteAdmin) {
+      return 'admin';
+    }
+    return 'regular'; // Default user type if no specific condition is met
+  };
 
   // useEffect(() => {
   //   (async () => {
@@ -67,6 +105,7 @@ const LnsBookingsProps: React.FC<ILnsBookingsProps> = (props) => {
         SharePointGroupID: 0,
         UrlZone: 1
       };
+     
       let parsedValue;
       const response = await spHttpClient.post(
         endpoint,
@@ -89,6 +128,7 @@ const LnsBookingsProps: React.FC<ILnsBookingsProps> = (props) => {
 
       if (Array.isArray(parsedValue)) {
         const suggestions: IPersonaProps[] = parsedValue
+          // .filter((user: any) => user.EntityData && user.EntityData.Description !== null)
           .filter((user: any) => user.EntityData && user.EntityData.Email !== null)
           .map((user: any) => ({
             key: user.Key, // Add a unique identifier
@@ -121,11 +161,20 @@ const LnsBookingsProps: React.FC<ILnsBookingsProps> = (props) => {
     setSelectedUsers(items || []);
   };
 
+  // function isUser(){
+  //   let personaldata : IPersonaProps[];
+  //   console.log('IPersonaProps', personaldata)
+  //   console.log('IPersonaProps JSON string', JSON.stringify(personaldata))
+  //   return true;
+  // }
+
   return (
     <section className={`${styles.lnsBookings} ${hasTeamsContext ? styles.teams : ''}`}>
       <div className={styles.welcome}>
         <h2>Well done, {escape(userDisplayName)}!</h2>
-
+        <h5> Current User Type: ({currentUserType})</h5>
+     
+        {currentUserType === 'admin' && (
         <NormalPeoplePicker
           onResolveSuggestions={onResolveSuggestions}
           onChange={onChange}
@@ -133,6 +182,10 @@ const LnsBookingsProps: React.FC<ILnsBookingsProps> = (props) => {
           resolveDelay={1000}
         />
         
+        )}
+        {currentUserType === 'regular' && (
+          <><span aria-disabled>no permissions to invite users</span></>
+        )}        
       </div>
     </section>
   );
