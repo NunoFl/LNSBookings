@@ -40,7 +40,7 @@ function LnsCalendar() {
         weekends: false,
         visibleRange: {
           start: 'now',
-          end: new Date().setDate(new Date().getDate() + 15)
+          end: new Date().setDate(new Date().getDate() + 7)
         },
       });
 
@@ -110,6 +110,34 @@ function LnsCalendar() {
           });
         });
       })
+      const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
+      //added listners on buttons to refresh the injected code 
+      //TODO: create single function as a listener for refreshing the data
+      document.querySelector('.fc-prev-button').addEventListener('click', async function () {
+        try {
+          await delay(100);
+          dayCellContent();
+        } catch (error) {
+          console.error('couldnt load week')
+        }
+      });
+      document.querySelector('.fc-next-button').addEventListener('click', function () {
+        try {
+          dayCellContent();
+        } catch (error) {
+          console.error('couldnt load week')
+        }
+      });
+      document.querySelector('.fc-today-button').addEventListener('click', function () {
+        try {
+          dayCellContent();
+        } catch (error) {
+          console.error('couldnt load week')
+        }
+      });
+      
+      
+     
     }
     else console.error('Failed to find the element!');
   };
