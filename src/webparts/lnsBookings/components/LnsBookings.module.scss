@@ -2,12 +2,15 @@
 
 .lnsBookings {
   overflow: hidden;
-  padding: 1em;
+  //padding: 1em;
   color: "[theme:bodyText, default: #323130]";
   color: var(--bodyText);
   &.teams {
     font-family: $ms-font-family-fallbacks;
   }
+  // th.fc-col-header-cell.fc-day {
+  //   display: none;
+  // }
 }
 
 .welcome {
@@ -32,3 +35,5 @@
     }
   }
 }
+
+
