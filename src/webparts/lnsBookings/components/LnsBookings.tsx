@@ -17,6 +17,9 @@ import customViewPlugin from './CustomView.js';
 import styles from './LnsBookings.module.scss';
 import './index.scss';
 
+
+//LnsCalendar Component
+//TODO Convert to Component and import to main file
 function LnsCalendar() {
   // const [selectedDates, setSelectedDates] = useState<Date>([]);
   // @ts-ignore
@@ -54,7 +57,7 @@ function LnsCalendar() {
   }, [calendarRef]);
 
  
-
+  //JS code injection
   function dayCellContent() {
     // Get the week row element
     const weekRow = document.querySelector('tr');
@@ -111,8 +114,10 @@ function LnsCalendar() {
         });
       })
       const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
+      
       //added listners on buttons to refresh the injected code 
       //TODO: create single function as a listener for refreshing the data
+      //TODO: max range defined by visibleRange is breaking the app on click of these buttons: (next/previous)
       document.querySelector('.fc-prev-button').addEventListener('click', async function () {
         try {
           await delay(100);
@@ -135,9 +140,6 @@ function LnsCalendar() {
           console.error('couldnt load week')
         }
       });
-      
-      
-     
     }
     else console.error('Failed to find the element!');
   };
